@@ -1,0 +1,40 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<title>OsTicket Checker Popup</title>
+		<link type="text/css" href="/css/smoothness/jquery-ui.custom.css" rel="stylesheet" />
+		<link type="text/css" href="/css/popup.css" rel="stylesheet" />
+		<link type="text/css" href="/css/ui.jqgrid.css" rel="stylesheet" />
+		<script type="text/javascript" src="/js/lib/jquery-1.8.3.min.js"></script> 
+		<script type="text/javascript" src="/js/lib/jquery-ui.custom.min.js"></script>
+		<script type="text/javascript" src="/js/lib/grid.locale-en.js"></script>
+		<script type="text/javascript" src="/js/lib/jquery.jqGrid.min.js"></script>
+		<script type="text/javascript" src="/js/popup.js"></script>
+		<style type="text/css"> 
+			body{ font: 10px "Verdana", sans-serif; }
+			#tabs{ margin: auto; width: 650px; }
+			#logo{ font-size: 48px; text-align: center; font-weight: bold; }
+			#logo img { vertical-align: text-bottom; }
+			
+			/*input.text { margin-bottom:12px; width:95%; padding: .4em; }*/
+			fieldset { padding:0; border:0; margin-top:25px; }
+			.ui-dialog .ui-state-error { padding: .3em; }
+			.validateTips { border: 1px solid transparent; padding: 0.3em; }		
+		</style>
+	</head>
+	<body>
+		<div id="loadMask" title="Loading..."></div>
+		
+		<table id="serverGrid"></table>
+		
+		<div id="toolbar" class="ui-widget-header ui-corner-all">
+			<input id="search" type="text" class="ui-widget-content ui-corner-all" size="16" />
+			<span class="css_right">
+				<button id="start" title="Start checker">Start</button>
+				<button id="stop" title="Stop checker">Stop</button>
+				<button id="recheck" title="Refresh checker">Recheck</button>&nbsp;
+				<button id="options" title="Checker options">Options</button>
+			</span>
+		</div>
+	</body>
+</html>
