@@ -5,5 +5,7 @@ $(document).ready(function() {
 
 	// Server's chercker object
 	checker = new checkerEngine(configuration);
+	checker.init();
 	checker.start();
+	
 });

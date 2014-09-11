@@ -7,11 +7,20 @@ function checkerEngine(configuration) {
 	this.sounds = Array( '', '/sound/critical.mp3', '/sound/hostdown.mp3', '/sound/warning.mp3' );
 	this.notificationLevel = 0;
 	this.notificationObjects = {};
-
-	this.playSound = function(sound, repeat) {
-		var audio = new Audio(this.sounds[sound]);
-		audio.play();
-	};
+	
+	// Call only once !!!!
+	this.init = function(){
+		checker = this;
+		chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex){
+			if(buttonIndex == 0 && checker.notificationObjects[notificationId]){
+				//chrome.windows.update({focused:true});
+				chrome.tabs.create({ url: checker.notificationObjects[notificationId] });
+				chrome.windows.getCurrent({}, function(window){
+					chrome.windows.update(window.id, {drawAttention:true, focused:true }, function(){});
+				})
+			}
+		});
+	}
 	
 	// Start the engine
 	this.start = function(silent) {
@@ -51,6 +60,10 @@ function checkerEngine(configuration) {
 		this.start(silent);
 	};
 	
+	this.playSound = function(sound, repeat) {
+		var audio = new Audio(this.sounds[sound]);
+		audio.play();
+	};
 	
 	// Check all servers
 	this.checkServers = function(list, silent) {
@@ -200,16 +213,7 @@ function checkerEngine(configuration) {
 						
 						checker.notificationObjects[notID] = lastLink;
 						
-						chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex){
-							if(buttonIndex == 0 && checker.notificationObjects[notificationId]){
-								//chrome.windows.update({focused:true});
-								chrome.tabs.create({ url: checker.notificationObjects[notificationId] });
-								chrome.windows.getCurrent({}, function(window){
-									
-									chrome.windows.update(window.id, {drawAttention:true, focused:true }, function(){});
-								})
-							}
-						});
+						
 					}
 					if(chrome.extension.getViews({type:'popup'}) && chrome.extension.getViews({type:'popup'})[0]){
 						chrome.extension.getViews({type:'popup'})[0].generateGrid()
