@@ -157,9 +157,9 @@ function checkerEngine(configuration) {
 						e.ticket 		= ticket;
 						e.ticketLink	= t_href;
 						e.status		= status;
-						e.date			= $($(this).children()[2]).html();
-						e.subject		= $($(this).children()[3]).find('a').html();
-						e.priority		= $($(this).children()[5]).html();
+						e.date			= $($(this).children()[3]).html();
+						e.subject		= $($(this).children()[5]).find('a').html();
+						e.priority		= $($(this).children()[7]).html();
 						e.from			= $($(this).children()[6]).html();
 						e.info			= '';
 						e.serverName	= serverName;
