@@ -70,6 +70,9 @@ function checkerEngine(configuration) {
 		// No servers ? Get out !
 		if(list.length == 0) return;
 
+		//loop time in seconds
+		var loopTime = this.configuration.options.commun.checkFrequency * 1000;
+
 		for(var serverIndex = 0; serverIndex<list.length; serverIndex++){
 			var serverName = list[serverIndex];
 
@@ -134,15 +137,31 @@ function checkerEngine(configuration) {
 						var t_href = '';
 						var status = 0;
 
-						if($(this).find('a:first>b').length){
+						/*if($(this).find('a:first>b').length){
 							ticket = $(this).find('a:first>b').html();
 							t_href = $(this).find('a:first').attr('href');
 							haveNewTickets = true;
 							checker.notificationLevel = 1;
 							status = 1;
 						}else{
-							ticket = $(this).find('a:first').html();
-							t_href = $(this).find('a:first').attr('href');
+						}*/
+						ticket = $(this).find('a:first').html();
+						t_href = $(this).find('a:first').attr('href');
+
+						var d = $($(this).children()[2]).html().split(',');
+						var now = new Date();
+						var time = d[1] += ':00';
+						time = time.trim();
+						var u_date = d[0].split('/');
+						u_date.reverse();
+						u_date[0] = '20'+u_date[0];
+						u_date = u_date.join('-');
+						d = new Date([u_date,time].join('T'));
+
+						if (((now.getTime() - d.getTime())) < loopTime) {
+							haveNewTickets = true;
+							checker.notificationLevel = 1;
+							status = 1;
 						}
 
 						var entry_id = serverName+'_'+ticket;
@@ -162,24 +181,26 @@ function checkerEngine(configuration) {
 						e.from			= $($(this).children()[4]).html();
 						e.info			= '';
 						e.serverName	= serverName;
+
 					});
 
+					var notificationItems = new Array();
 					if(haveNewTickets && !silent == true){
 						if(checker.configuration.options.commun.sound == true){
 							checker.playSound(checker.notificationLevel);
 						}
 
-						notificationItems = Array();
 						lastLink = '';
 						for(host in checker.configuration.results[serverName]) {
-							for(a in checker.configuration.results[serverName][host]) {
-								var alerte = checker.configuration.results[serverName][host][a];
+							for(a in checker.configuration.results[serverName]['hosts']) {
+								var alerte = checker.configuration.results[serverName]['hosts'][a];
 								if(alerte.status == 1 && checker.notificationLevel < 1)	{
 									checker.notificationLevel = 1;
 								};
 								if(alerte.status == 0){
 									continue;
 								}
+
 								notificationItems.push({
 									'title': '#'+alerte.ticket,
 									'message': (alerte.subject?alerte.subject:'No Subject')
@@ -191,11 +212,12 @@ function checkerEngine(configuration) {
 						var notID = (Math.floor(Math.random() * 9007199254740992) + 1).toString();
 						chrome.notifications.create(notID,{
 							type: "list",
-							title: "["+serverName+"] NEW Tickets",
-							message: "New tickets!",
+							title: "Nuovi Tickets",
+							message: "Sono stati aperti i seguenti ticket:",
 							iconUrl: "icons/48.png",
+							//icon: "icons/48.png",
 							priority: 2,
-							isClickable: true,
+							//isClickable: true,
 							items: notificationItems,
 							buttons: [
 								{ title: 'View tickets', iconUrl: 'icons/kenguru.png'},
