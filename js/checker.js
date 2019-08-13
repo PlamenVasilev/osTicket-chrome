@@ -7,7 +7,7 @@ function checkerEngine(configuration) {
 	this.sounds = Array( '', '/sound/critical.mp3', '/sound/hostdown.mp3', '/sound/warning.mp3' );
 	this.notificationLevel = 0;
 	this.notificationObjects = {};
-	
+
 	// Call only once !!!!
 	this.init = function(){
 		checker = this;
@@ -21,7 +21,7 @@ function checkerEngine(configuration) {
 			}
 		});
 	}
-	
+
 	// Start the engine
 	this.start = function(silent) {
 		if(!this.isRestart){
@@ -59,22 +59,22 @@ function checkerEngine(configuration) {
 		this.stop(silent);
 		this.start(silent);
 	};
-	
+
 	this.playSound = function(sound, repeat) {
 		var audio = new Audio(this.sounds[sound]);
 		audio.play();
 	};
-	
+
 	// Check all servers
 	this.checkServers = function(list, silent) {
 		// No servers ? Get out !
 		if(list.length == 0) return;
-		
+
 		for(var serverIndex = 0; serverIndex<list.length; serverIndex++){
 			var serverName = list[serverIndex];
-			
+
 			console.info('Server: '+serverName);
-			
+
 			var url = this.configuration.getServerUrl(serverName) + this.configuration.servers[serverName].servicesPath;
 			var login_params = {
 				'do':'scplogin',
@@ -97,7 +97,7 @@ function checkerEngine(configuration) {
 					login_params.__CSRFToken__ = $('input[name="__CSRFToken__"]', $(data)).val();
 				}
 			});
-			
+
 			$.ajax({
 				url: url,
 				type: "POST",
@@ -109,32 +109,31 @@ function checkerEngine(configuration) {
 					var serverName = this.serverName;
 					checker.configuration.results[serverName] = { hosts: {} };
 					var haveNewTickets = false;
-					
+
 					if(data.toString().match(/Authentication Required/i) || data.toString().match(/Access denied/i)){
 						console.info('Error login ...');
 						notID = this.checker.showNotification('Cannot login into server: '+serverName);
 						return;
 					}
-					
+
 					if($('table[class=dtable]', $(data)).length>0){
 						var table = $('table[class=dtable]', $(data));
-						
-					}else if($('table[class=list]', $(data)).length>0){
-						var table = $('table[class=list]', $(data));
-						
+
+					}else if($('table[class~=list]', $(data)).length>0){
+						var table = $('table[class~=list]', $(data));
 					}else{
 						console.info('Error load table ...');
 						notID = this.checker.showNotification('Cannot load tickets data from server: '+this.serverName);
 						return;
 					}
-					
+
 					$('tr[class*=row], tbody>tr', table).filter(function(){
-						return this.id.match(/\d+/);
+						return this;
 					}).each(function(){
 						var ticket = 0;
 						var t_href = '';
 						var status = 0;
-						
+
 						if($(this).find('a:first>b').length){
 							ticket = $(this).find('a:first>b').html();
 							t_href = $(this).find('a:first').attr('href');
@@ -145,31 +144,31 @@ function checkerEngine(configuration) {
 							ticket = $(this).find('a:first').html();
 							t_href = $(this).find('a:first').attr('href');
 						}
-						
+
 						var entry_id = serverName+'_'+ticket;
-						
-						checker.configuration.results[serverName].hosts[entry_id] = 
-							checker.configuration.results[serverName].hosts[entry_id] ? 
+
+						checker.configuration.results[serverName].hosts[entry_id] =
+							checker.configuration.results[serverName].hosts[entry_id] ?
 							checker.configuration.results[serverName].hosts[entry_id] : {};
 						var e = checker.configuration.results[serverName].hosts[entry_id];
-						
+
 						e.id			= entry_id;
 						e.ticket 		= ticket;
 						e.ticketLink	= t_href;
 						e.status		= status;
-						e.date			= $($(this).children()[3]).html();
-						e.subject		= $($(this).children()[5]).find('a').html();
-						e.priority		= $($(this).children()[7]).html();
-						e.from			= $($(this).children()[6]).html();
+						e.date			= $($(this).children()[2]).html();
+						e.subject		= $($(this).children()[3]).find('a').html();
+						e.priority		= $($(this).children()[5]).html();
+						e.from			= $($(this).children()[4]).html();
 						e.info			= '';
 						e.serverName	= serverName;
 					});
-					
+
 					if(haveNewTickets && !silent == true){
 						if(checker.configuration.options.commun.sound == true){
 							checker.playSound(checker.notificationLevel);
 						}
-						
+
 						notificationItems = Array();
 						lastLink = '';
 						for(host in checker.configuration.results[serverName]) {
@@ -188,7 +187,7 @@ function checkerEngine(configuration) {
 								lastLink = checker.configuration.getServerUrl(serverName)+checker.configuration.servers[serverName].servicesPath;
 							}
 						}
-						
+
 						var notID = (Math.floor(Math.random() * 9007199254740992) + 1).toString();
 						chrome.notifications.create(notID,{
 							type: "list",
@@ -210,21 +209,21 @@ function checkerEngine(configuration) {
 								}, checker.configuration.options.commun.popupDuration * 1000);
 							}
 						} );
-						
+
 						checker.notificationObjects[notID] = lastLink;
-						
-						
+
+
 					}
 					if(chrome.extension.getViews({type:'popup'}) && chrome.extension.getViews({type:'popup'})[0]){
 						chrome.extension.getViews({type:'popup'})[0].generateGrid()
 					}
 				}
 			});
-			
+
 		}
-		
+
 	};
-	
+
 	this.showNotification = function(notificationBody){
 		try {
 			var notID = (Math.floor(Math.random() * 9007199254740992) + 1).toString();
