@@ -212,8 +212,8 @@ function checkerEngine(configuration) {
 						var notID = (Math.floor(Math.random() * 9007199254740992) + 1).toString();
 						chrome.notifications.create(notID,{
 							type: "list",
-							title: "Nuovi Tickets",
-							message: "Ci sono state delle attività sui seguenti ticket:",
+							title: "New Tickets",
+							message: "New activities on tickets:",
 							iconUrl: "icons/48.png",
 							//icon: "icons/48.png",
 							priority: 2,
