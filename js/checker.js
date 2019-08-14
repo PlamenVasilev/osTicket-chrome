@@ -213,7 +213,7 @@ function checkerEngine(configuration) {
 						chrome.notifications.create(notID,{
 							type: "list",
 							title: "Nuovi Tickets",
-							message: "Sono stati aperti i seguenti ticket:",
+							message: "Ci sono state delle attività sui seguenti ticket:",
 							iconUrl: "icons/48.png",
 							//icon: "icons/48.png",
 							priority: 2,
