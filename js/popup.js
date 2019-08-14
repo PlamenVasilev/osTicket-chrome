@@ -17,7 +17,7 @@ $(document).ready(function() {
 	// Stop the checker
 	$("#stop").button({ text: false, icons: { primary: "ui-icon-stop" } });
 	$("#stop").click(function() { checker.stop(); $("#start").button("enable"); $("#stop").button("disable"); });
-	
+
 	// Force check of all servers
 	$("#recheck").button({ text: false, icons: { primary: "ui-icon-refresh" } });
 	$("#recheck").click(function() { checker.restart(true); });
@@ -25,21 +25,21 @@ $(document).ready(function() {
 	// Go to options page
 	$("#options").button({ text: false, icons: { primary: "ui-icon-wrench" } });
 	$("#options").click(function() { window.open('/html/options.html'); });
-	
+
 	// Activate start or stop button regarding the checker status
 	if(checker.started == true) { $("#start").button("disable"); $("#stop").button("enable"); }
 	else { $("#stop").button("disable"); $("#start").button("enable"); }
-	
 
-	
+
+
 	// Search input
 	$("#search").keyup(function(event) {
 		if (event.keyCode == '13') event.preventDefault();
 		fillGrid($('#search').val());
 	});
-	
+
 	generateGrid();
-	
+
 });
 
 // Fil the grid
@@ -64,7 +64,7 @@ function fillGrid(filter) {
 					i_subject:	row.subject,
 					lastCheck:  row.lastCheck,
 					serverName: row.serverName
-					
+
 				});
 				$('#serverGrid tr#' + host + ' td').addClass(alertColor[row.status]);
 				i++;
@@ -74,8 +74,8 @@ function fillGrid(filter) {
 	};
 	$('#serverGrid').setGridParam({ sortname: 'dateSort' }).sortGrid('dateSort');
 	$('#serverGrid').sortGrid('dateSort');
-	
-	
+
+
 }
 
 // Refresh popup every second
@@ -89,13 +89,13 @@ function generateGrid() {
 	   	colModel:[
 	   		{name: 'num', index: 'num', hidden: true, sorttype: 'int'},
 	   		{name: 'dateSort', index: 'dateSort', hidden: true, sorttype:'date',},
-	   		
+
 	   		{name: 'ticket', index: 'ticket', hidden: false, sortable: false},
 	   		{name: 'date', index: 'dateSort', sortable: true},
 	   		{name: 'subject', index: 'subject',  sortable: false},
 	   		{name: 'priority', index: 'priority',  sortable: false},
 	   		{name: 'from', index: 'from',  sortable: false},
-	   		
+
 	   		{name: 'i_from', index: 'i_from', hidden: true},
 	   		{name: 'i_subject', index: 'i_from', hidden: true},
 	   		{name: 'lastCheck', index: 'lastCheck', hidden: true},
@@ -121,11 +121,11 @@ function generateGrid() {
 		gridComplete: function(){
 			$('.link_open').on('click', function(e){
 				e.preventDefault();
-				
+
 				var configuration = chrome.extension.getBackgroundPage().configuration;
 				var server = $(this).attr('server');
-				var url = configuration.getServerUrl(server) + configuration.servers[server].root + $(this).attr('href'); 
-				
+				var url = configuration.getServerUrl(server) + $(this).attr('href'); 
+
 				chrome.tabs.create({ url: url });
 			})
 		}
